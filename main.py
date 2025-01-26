@@ -4,13 +4,13 @@ import scratchattach as sa
 import asyncio
 import os
 
+scratch_password = os.getenv('SCRATCH_PASSWORD')
+
 async def start_scratch_listener():
     # 非同期処理をここに書く
-    session = sa.login("your_username", "your_password")
+    session = sa.login("Zei_Para_channel", scratch_password)
     # 他の非同期処理もここで行うことができます
     await some_async_task()
-
-scratch_password = os.getenv('SCRATCH_PASSWORD')
 
 app = FastAPI()
 
