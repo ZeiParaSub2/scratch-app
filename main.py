@@ -6,12 +6,25 @@ import os
 
 scratch_password = os.getenv('SCRATCH_PASSWORD')
 
+# 非同期でScratchの通知リスナーを開始する関数
 async def start_scratch_listener():
-    session = sa.login("Zei_Para_channel", scratch_password)
-    # 他の非同期処理を行う
-    print("Listening for Scratch messages...")
+    # sa.login()は同期関数なので、非同期でラップする
+    session = await asyncio.to_thread(sa.login, "Zei_Para_channel", scratch_password)
+    events = session.connect_message_events()
 
-app = FastAPI()
+    @events.event
+    def on_message(message):
+        # 新しい通知をリストに保存
+        notification = {
+            "title": f"新しい通知 from {message.actor_username}",
+            "message": f"{message.actor_username} sent a {message.type}"
+        }
+        notifications.append(notification)
+
+        # WebSocketで接続している全クライアントに通知を送る
+        asyncio.create_task(send_notifications_to_clients(notification))
+
+    events.start()
 
 # 通知データ保存用（テスト用に簡易リストを使用、DBに保存も可能）
 notifications = []
@@ -37,25 +50,6 @@ async def websocket_endpoint(websocket: WebSocket):
     finally:
         clients.remove(websocket)
 
-# Scratchattachで通知を感知する
-def start_scratch_listener():
-    session = sa.login("Zei_Para_channel", scratch_password)
-    events = session.connect_message_events()
-
-    @events.event
-    def on_message(message):
-        # 新しい通知をリストに保存
-        notification = {
-            "title": f"新しい通知 from {message.actor_username}",
-            "message": f"{message.actor_username} sent a {message.type}"
-        }
-        notifications.append(notification)
-
-        # WebSocketで接続している全クライアントに通知を送る
-        asyncio.run(send_notifications_to_clients(notification))
-
-    events.start()
-
 # WebSocketクライアントに通知を送信
 async def send_notifications_to_clients(notification):
     for client in clients:
@@ -66,6 +60,9 @@ async def send_notifications_to_clients(notification):
 async def startup_event():
     # 非同期関数をawaitで呼び出す
     await start_scratch_listener()
+
+# FastAPIアプリケーションを起動
+app = FastAPI()
 
 if __name__ == "__main__":
     import uvicorn
