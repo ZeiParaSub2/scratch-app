@@ -67,3 +67,8 @@ async def send_notifications_to_clients(notification):
 async def startup_event():
     loop = asyncio.get_event_loop()
     loop.create_task(start_scratch_listener())
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.getenv("PORT", 8000))  # Render.comで指定されたポートを使用
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
