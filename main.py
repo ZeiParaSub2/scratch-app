@@ -7,10 +7,9 @@ import os
 scratch_password = os.getenv('SCRATCH_PASSWORD')
 
 async def start_scratch_listener():
-    # 非同期処理をここに書く
     session = sa.login("Zei_Para_channel", scratch_password)
-    # 他の非同期処理もここで行うことができます
-    await some_async_task()
+    # 他の非同期処理を行う
+    print("Listening for Scratch messages...")
 
 app = FastAPI()
 
@@ -65,8 +64,8 @@ async def send_notifications_to_clients(notification):
 # サーバー起動時にScratch通知リスナーを開始
 @app.on_event("startup")
 async def startup_event():
-    loop = asyncio.get_event_loop()
-    loop.create_task(start_scratch_listener())
+    # 非同期関数をawaitで呼び出す
+    await start_scratch_listener()
 
 if __name__ == "__main__":
     import uvicorn
