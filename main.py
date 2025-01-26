@@ -4,6 +4,9 @@ import scratchattach as sa
 import asyncio
 import os
 
+# FastAPIアプリケーションを起動
+app = FastAPI()
+
 scratch_password = os.getenv('SCRATCH_PASSWORD')
 
 # 非同期でScratchの通知リスナーを開始する関数
@@ -60,9 +63,6 @@ async def send_notifications_to_clients(notification):
 async def startup_event():
     # 非同期関数をawaitで呼び出す
     await start_scratch_listener()
-
-# FastAPIアプリケーションを起動
-app = FastAPI()
 
 if __name__ == "__main__":
     import uvicorn
