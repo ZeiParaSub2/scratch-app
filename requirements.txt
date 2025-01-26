@@ -1,4 +1,4 @@
 fastapi==0.100.0
 uvicorn==0.22.0
-scratchattach==1.0.0
+scratchattach==2.1.9
 websockets==11.0
