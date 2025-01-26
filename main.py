@@ -2,6 +2,9 @@ from fastapi import FastAPI, WebSocket
 from pydantic import BaseModel
 import scratchattach as sa
 import asyncio
+import os
+
+scratch_password = os.getenv('SCRATCH_PASSWORD')
 
 app = FastAPI()
 
@@ -31,7 +34,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
 # Scratchattachで通知を感知する
 def start_scratch_listener():
-    session = sa.login("your_username", "your_password")
+    session = sa.login("Zei_Para_channel", scratch_password)
     events = session.connect_message_events()
 
     @events.event
